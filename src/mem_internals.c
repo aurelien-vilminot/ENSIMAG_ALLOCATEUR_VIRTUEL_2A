@@ -61,7 +61,6 @@ mark_check_and_get_alloc(void *ptr)
     memcpy((void *) &magic, ptr, inc);
     // Récupérer et vérifier MemKind
     a.kind = (MemKind) (magic & (0&11UL));
-    // assert(a.kind == LARGE_KIND);
     // Vérification nombre magique
     assert(magic == magic_number(a.ptr, a.kind));
     // Vérification 16 premiers o = 16 derniers o
