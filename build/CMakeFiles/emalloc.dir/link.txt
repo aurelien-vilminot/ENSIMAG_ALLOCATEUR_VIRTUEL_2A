@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -g -Wall -Werror -std=gnu11 -I/usr/include/python3.8  -shared -Wl,-soname,libemalloc.so -o libemalloc.so CMakeFiles/emalloc.dir/src/mem.c.o CMakeFiles/emalloc.dir/src/mem_internals.c.o CMakeFiles/emalloc.dir/src/mem_small.c.o CMakeFiles/emalloc.dir/src/mem_medium.c.o CMakeFiles/emalloc.dir/src/mem_large.c.o 

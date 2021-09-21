@@ -1,0 +1,42 @@
+Start testing: Sep 21 11:41 CEST
+----------------------------------------------------------
+1/1 Testing: AllTestsAllocator
+1/1 Test: AllTestsAllocator
+Command: "/user/9/.base/clauzond/home/2A/SEP TP/DM1/sepc_tp1/build/alloctest"
+Directory: /user/9/.base/clauzond/home/2A/SEP TP/DM1/sepc_tp1/build
+"AllTestsAllocator" start time: Sep 21 11:41 CEST
+Output:
+----------------------------------------------------------
+[==========] Running 12 tests from 4 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from Mark
+[ RUN      ] Mark.mmix
+[       OK ] Mark.mmix (0 ms)
+[----------] 1 test from Mark (1 ms total)
+
+[----------] 7 tests from Basic
+[ RUN      ] Basic.zero
+[       OK ] Basic.zero (0 ms)
+[ RUN      ] Basic.onetinysmall
+/user/9/clauzond/2A/SEP TP/DM1/sepc_tp1/tests/test_generic.cc:27: Failure
+Expected: (ptr) != (nullptr), actual: NULL vs (nullptr)
+[  FAILED  ] Basic.onetinysmall (0 ms)
+[ RUN      ] Basic.onelargesmall
+/user/9/clauzond/2A/SEP TP/DM1/sepc_tp1/tests/test_generic.cc:34: Failure
+Expected: (ptr) != (nullptr), actual: NULL vs (nullptr)
+[  FAILED  ] Basic.onelargesmall (0 ms)
+[ RUN      ] Basic.onemedium
+/user/9/clauzond/2A/SEP TP/DM1/sepc_tp1/tests/test_generic.cc:41: Failure
+Expected: (ptr) != (nullptr), actual: NULL vs (nullptr)
+[  FAILED  ] Basic.onemedium (0 ms)
+[ RUN      ] Basic.onelarge
+alloctest: /user/9/clauzond/2A/SEP TP/DM1/sepc_tp1/src/mem_internals.c:65: mark_check_and_get_alloc: Assertion `magic == magic_number(a.ptr, a.kind)' failed.
+<end of output>
+Test time =   0.18 sec
+----------------------------------------------------------
+Test Failed.
+"AllTestsAllocator" end time: Sep 21 11:41 CEST
+"AllTestsAllocator" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 21 11:41 CEST
