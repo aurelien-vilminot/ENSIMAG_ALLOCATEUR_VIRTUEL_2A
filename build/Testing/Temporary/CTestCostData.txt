@@ -1,3 +1,0 @@
-AllTestsAllocator 0 0
----
-AllTestsAllocator
