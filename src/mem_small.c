@@ -13,6 +13,15 @@ emalloc_small(unsigned long size)
 {
     if (arena.chunkpool == NULL) {
         unsigned long block_size = mem_realloc_small();
+        for (unsigned long i = 0; i < block_size - CHUNKSIZE; i += CHUNKSIZE) {
+            // On écrit dans le bloc i...
+            void **addr_to_write = arena.chunkpool;
+            // ... l'adresse du bloc qui le suit (i + chunksize)
+            *addr_to_write = (arena.chunkpool + CHUNKSIZE);
+
+            arena.chunkpool += CHUNKSIZE;
+        }
+        arena.chunkpool -= block_size - CHUNKSIZE;
     }
     void * head = arena.chunkpool;
     arena.chunkpool += CHUNKSIZE;
@@ -20,5 +29,10 @@ emalloc_small(unsigned long size)
 }
 
 void efree_small(Alloc a) {
-    /* ecrire votre code ici */
+    // Recule d'un bloc dans la pool
+    arena.chunkpool -= CHUNKSIZE;
+    // On écrit dans ce bloc...
+    void ** addr_to_write = arena.chunkpool;
+    // ... l'adresse du chunk qui devient la tête de la liste chaînée
+    *addr_to_write = a.ptr;
 }
