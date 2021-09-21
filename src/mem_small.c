@@ -11,8 +11,12 @@
 void *
 emalloc_small(unsigned long size)
 {
-    /* ecrire votre code ici */
-    return (void *)0;
+    if (arena.chunkpool == NULL) {
+        unsigned long block_size = mem_realloc_small();
+    }
+    void * head = arena.chunkpool;
+    arena.chunkpool += CHUNKSIZE;
+    return mark_memarea_and_get_user_ptr(head, CHUNKSIZE, SMALL_KIND);
 }
 
 void efree_small(Alloc a) {
