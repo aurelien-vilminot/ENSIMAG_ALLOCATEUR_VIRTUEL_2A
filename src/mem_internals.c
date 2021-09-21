@@ -10,9 +10,6 @@
 #include "mem.h"
 #include "mem_internals.h"
 
-// Droit ou pas ?
-#include <string.h>
-
 unsigned long knuth_mmix_one_round(unsigned long in)
 {
     return in * 6364136223846793005UL % 1442695040888963407UL;
@@ -29,19 +26,17 @@ void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
     size_t inc = sizeof(unsigned long);
 
     // Copier dans les 8o taille
-    memcpy(ptr, &size, inc);
+    unsigned long *new_ptr = (unsigned long *) ptr;
+    new_ptr[0] = size;
     // Copier dans les 8o (suivant taille) magic
-    ptr += inc;
-    memcpy(ptr, &magic, inc);
+    new_ptr[1] = magic;
     // Copier dans les 8o (suivant delta) magic
-    ptr += size - 3*inc;
-    memcpy(ptr, &magic, inc);
+    new_ptr = (unsigned long *) (ptr + size - 2*inc); 
+    new_ptr[0] = magic;
     // Copier dans les 8o (suivant magic) taille
-    ptr += inc;
-    memcpy(ptr, &size, inc);
-    // Positionner ptr sur la mémoire utilisateur
-    ptr -= size - 3*inc;
-    return ptr;
+    new_ptr[1] = size;
+    // Renvoyer ptr sur la mémoire utilisateur
+    return (ptr + 2*inc);
 }
 
 Alloc
@@ -51,25 +46,22 @@ mark_check_and_get_alloc(void *ptr)
 
     // Positionner pointeur sur taille
     size_t inc = sizeof(unsigned long);
-    ptr -= 2*inc;
-    a.ptr = ptr;
+    a.ptr = (ptr - 2*inc);
+    // new_ptr au début du bloc mémoire
+    unsigned long *new_ptr = (unsigned long *) ptr;
     // Copier dans a.size les 8o de ptr
-    memcpy((void *) &a.size, ptr, inc);
+    a.size = new_ptr[-2];
     // Récupérer le nombre magique
-    ptr += inc;
-    unsigned long magic;
-    memcpy((void *) &magic, ptr, inc);
+    unsigned long magic = new_ptr[-1];
     // Récupérer et vérifier MemKind
     a.kind = (MemKind) (magic & (0&11UL));
     // Vérification nombre magique
     assert(magic == magic_number(a.ptr, a.kind));
+    // new_ptr à la fin du bloc
+    new_ptr = (unsigned long *) (ptr + a.size - 2*inc);
     // Vérification 16 premiers o = 16 derniers o
-    unsigned long magic_end;
-    unsigned long size_end;
-    ptr += a.size - 3*inc;
-    memcpy((void *) &magic_end, ptr, inc);
-    ptr += inc;
-    memcpy((void *) &size_end, ptr, inc);
+    unsigned long magic_end = new_ptr[-2];
+    unsigned long size_end = new_ptr[-1];
     assert(magic == magic_end);
     assert(a.size == size_end);
     return a;
