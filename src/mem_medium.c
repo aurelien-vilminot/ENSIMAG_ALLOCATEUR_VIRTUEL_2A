@@ -29,6 +29,7 @@ void diviser_bloc(void* ptr, unsigned long size_ptr, unsigned long indice_ptr, u
     if (n == 0) {
         return;
     }
+    // on divise le bloc en deux, bloc_libre est celui "de droite"
     void* bloc_libre = ptr + (size_ptr >> 1);
     // bloc_libre.next = arena.TZL[...]
     *((void **) bloc_libre) = arena.TZL[indice_ptr - 1];
@@ -49,11 +50,9 @@ emalloc_medium(unsigned long size)
     // Cas 1: bloc libre à l'indice_tzl
     if (arena.TZL[indice_tzl] != NULL) {
         void* ptr = arena.TZL[indice_tzl];
-        // memuser = ptr.next
-        void* memuser = *((void **) ptr);
-        // arena.TZL[indice_tzl].next = memuser.next
-        *((void **) ptr) = *((void **) memuser);
-        return mark_memarea_and_get_user_ptr(memuser, size, MEDIUM_KIND);
+        // arena.TZL[indice_tzl] = ptr.next
+        arena.TZL[indice_tzl] = *((void **) ptr);
+        return mark_memarea_and_get_user_ptr(ptr, size, MEDIUM_KIND);
     }
 
     // Cas 2: on trouve un bloc libre, puis on le divise jusqu'à la taille qu'on veut
@@ -68,7 +67,13 @@ emalloc_medium(unsigned long size)
     // on a nécessairement arena.TZL[indice_libre] qui contient un bloc libre
     // division récursive du bloc libre à cet indice
     void* ptr = arena.TZL[indice_libre];
+    // avant de diviser le bloc, on l'enlève de arena.TZL[indice_libre]
+    // arena.TZL[indice_libre] = arena.TZL[indice_libre].next
+    arena.TZL[indice_libre] = *((void **) arena.TZL[indice_libre]);
     diviser_bloc(ptr, (1 << indice_libre), indice_libre, (indice_libre - indice_tzl));
+
+    // ici, ptr de taille size est la partie tout à gauche du bloc qu'on a divisé
+    // c'est celle-ci qu'on marque et renvoie
 
     // l'adresse à utiliser est "ptr", de taille "size" (voir figure 2)
     return mark_memarea_and_get_user_ptr(ptr, size, MEDIUM_KIND);

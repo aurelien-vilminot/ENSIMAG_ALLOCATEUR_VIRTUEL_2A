@@ -17,7 +17,7 @@ unsigned long knuth_mmix_one_round(unsigned long in)
 
 unsigned long magic_number(void *ptr, MemKind k) {
     unsigned long magic = knuth_mmix_one_round((unsigned long) ptr);
-    return (magic & ~(0b11UL)) ^ ((unsigned long) k);
+    return (magic & ~(0b11UL)) ^ k;
 }
 
 void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
@@ -42,7 +42,7 @@ void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
 Alloc
 mark_check_and_get_alloc(void *ptr)
 {
-    Alloc a = {};
+    Alloc a;
 
     // Positionner pointeur sur taille
     size_t inc = sizeof(unsigned long);
@@ -54,7 +54,7 @@ mark_check_and_get_alloc(void *ptr)
     // Récupérer le nombre magique
     unsigned long magic = new_ptr[-1];
     // Récupérer et vérifier MemKind
-    a.kind = (MemKind) (magic & (0&11UL));
+    a.kind = (MemKind) (magic & (0b11UL));
     // Vérification nombre magique
     assert(magic == magic_number(a.ptr, a.kind));
     // new_ptr à la fin du bloc
