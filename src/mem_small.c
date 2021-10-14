@@ -11,7 +11,7 @@
 void *
 emalloc_small(unsigned long size)
 {
-    if (arena.chunkpool == NULL) {
+    if (arena.chunkpool == NULL || *((void **) arena.chunkpool) == NULL) {
         unsigned long block_size = mem_realloc_small();
         for (unsigned long i = 0; i < block_size - CHUNKSIZE; i += CHUNKSIZE) {
             // On écrit dans le bloc i...
@@ -21,6 +21,9 @@ emalloc_small(unsigned long size)
 
             arena.chunkpool += CHUNKSIZE;
         }
+        // le dernier bloc pointe vers NULL
+        *((void**) arena.chunkpool) = NULL;
+
         arena.chunkpool -= block_size - CHUNKSIZE;
     }
     void * head = arena.chunkpool;

@@ -45,6 +45,8 @@ emalloc_medium(unsigned long size)
 {
     assert(size < LARGEALLOC);
     assert(size > SMALLALLOC);
+    // pour le marquage, on doit prendre 32 octets supplémentaires
+    size += 32;
     unsigned int indice_tzl = puiss2(size);
 
     // Cas 1: bloc libre à l'indice_tzl
