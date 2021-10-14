@@ -27,15 +27,14 @@ emalloc_small(unsigned long size)
         arena.chunkpool -= block_size - CHUNKSIZE;
     }
     void * head = arena.chunkpool;
-    arena.chunkpool += CHUNKSIZE;
+    arena.chunkpool = *((void **) arena.chunkpool);
     return mark_memarea_and_get_user_ptr(head, CHUNKSIZE, SMALL_KIND);
 }
 
 void efree_small(Alloc a) {
-    // Recule d'un bloc dans la pool
-    arena.chunkpool -= CHUNKSIZE;
-    // On écrit dans ce bloc...
-    void ** addr_to_write = arena.chunkpool;
-    // ... l'adresse du chunk qui devient la tête de la liste chaînée
-    *addr_to_write = a.ptr;
+    // On place en tête de arena.chunkpool notre bloc a.ptr
+    // a.ptr.next = arena.chunkpool
+    *((void**) a.ptr) = arena.chunkpool;
+    // arena.chunkpool = a.ptr
+    arena.chunkpool = a.ptr;
 }
